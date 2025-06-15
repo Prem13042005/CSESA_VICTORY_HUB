@@ -1,0 +1,54 @@
+-- Active: 1747411533842@@127.0.0.1@3306@csesa_db
+CREATE TABLE students (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  year ENUM('FE', 'SE', 'TE', 'BE') NOT NULL,
+  registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE admins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE internships (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT,
+  title VARCHAR(255),
+  file_path VARCHAR(255),
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+);
+    
+CREATE TABLE achievements (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT,
+  title VARCHAR(255),
+  file_path VARCHAR(255),
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+);
+
+CREATE TABLE notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT,
+  type ENUM('internship', 'achievement'),
+  message TEXT,
+  seen BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+);
+
+DESCRIBE students;
+
+ALTER TABLE students ADD COLUMN photo VARCHAR(255);
+
+ALTER TABLE students DROP COLUMN photo_filename;
+
+ALTER TABLE internships ADD COLUMN approved BOOLEAN DEFAULT FALSE;
+ALTER TABLE achievements ADD COLUMN approved BOOLEAN DEFAULT FALSE;

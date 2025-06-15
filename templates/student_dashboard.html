@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Dashboard | CSESA Victory Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
+
+    body {
+      color: #fff;
+    }
+
+    .navbar {
+      background: transparent; 
+      padding: 15px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(1px); 
+    }
+
+    .navbar .logo {
+      font-size: 2em;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .navbar-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .navbar-links a {
+      padding: 10px 16px;
+      color: #fff;
+      font-weight: 500;
+      border-radius: 8px;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .navbar-links a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      left: 0;
+      bottom: 0;
+      background: #fdf004;
+      transition: 0.3s;
+    }
+
+    .navbar-links a:hover::after {
+      width: 100%;
+    }
+
+    .logout-button {
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      height: 3px;
+      width: 25px;
+      background: white;
+      margin: 4px;
+      border-radius: 5px;
+      transition: 0.4s ease;
+    }
+
+    .main {
+      text-align: center;
+      padding: 100px 20px 40px;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .center-img {
+      width: 120px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #0d0d0d;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .center-img:hover {
+      transform: scale(1.1);
+    }
+
+    .message {
+      font-size: 1.6rem;
+      color: #ffd54f;
+      font-weight: bold;
+    }
+
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      margin-bottom: 15px;
+    }
+
+    .profile-photo:hover {
+      border: 2px solid #000;
+    }
+
+    .upload-section {
+      display: none;
+      max-width: 600px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+    }
+
+    .upload-section h2 {
+      color: #ffd700;
+      margin-bottom: 20px;
+    }
+
+    input[type="file"], input[type="text"] {
+      width: 100%;
+      margin: 10px 0 20px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fff;
+      color: #333;
+    }
+
+    .upload-button {
+      background-color: #ffa500;
+      color: white;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .uploaded-section {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .uploaded-title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffeb3b;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .upload-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .upload-table th, .upload-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .upload-table th {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ffeb3b;
+    }
+
+    .upload-table a {
+      color: #00e5ff;
+      text-decoration: underline;
+    }
+
+    .upload-table tr:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .carousel-container {
+      max-width: 815px;
+      margin: 60px auto;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-item {
+      flex: 0 0 100%;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.2em;
+      background-color: #111;
+      color: #fff;
+      border-radius: 10px;
+    }
+
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .carousel-button {
+      padding: 10px 20px;
+      background-color: #ffd700;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .carousel-button:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media screen and (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .navbar-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        margin-top: 10px;
+        padding: 10px 0;
+      }
+
+      .navbar-links.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Vanta Background -->
+  <div id="vanta-bg"></div>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">Victory Hub</div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="navbar-links" id="navbarLinks">
+      <a onclick="toggleSection('internship')">Internship</a>
+      <a onclick="toggleSection('achievements')">Achievements</a>
+      <form action="/logout" method="POST" style="display:inline;">
+        <button type="submit" class="logout-button">Logout</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="main">
+    <img src="/static/college-logo.jpg" alt="College Logo" class="center-img">
+    <p class="message">"Your achievements matter! Upload your milestones and internship experiences here."</p>
+  </div>
+  <!-- Profile Info -->
+  <div style="max-width: 600px; margin: 0 auto 40px; text-align: center; padding: 30px; background: rgba(255,255,255,0.07); border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+
+    <img src="{{ url_for('serve_profile_photo', filename=user.photo) }}" alt="Profile Photo" class="profile-photo">
+
+    <h2 style="margin-bottom: 10px; margin-top: 15px; font-weight: 600; color: #fff;">{{ user.name }}</h2>
+
+    <p style="margin: 6px 0; color: #fff;"><strong>Email:</strong> {{ user.email }}</p>
+    <p style="margin: 6px 0; color: #fff;"><strong>Gender:</strong> {{ user.gender }}</p>
+    <p style="margin: 6px 0; color: #fff;"><strong>DOB:</strong> {{ user.dob }}</p>
+    <p style="margin: 6px 0; color: #fff;"><strong>Year:</strong> {{ user.year }}</p>
+  </div>
+
+  <!-- Upload Internship -->
+  <div class="upload-section" id="internship">
+    <h2>Upload Internship</h2>
+    <form action="/upload-internship" method="POST" enctype="multipart/form-data">
+      <input type="text" name="title" placeholder="Internship Title" required>
+      <input type="text" name="year" placeholder="Year (e.g., SY)" required>
+      <input type="file" name="internship_pdf" accept=".pdf" required>
+      <button type="submit" class="upload-button">Upload Internship</button>
+    </form>
+  </div>
+
+  <!-- Upload Achievement -->
+  <div class="upload-section" id="achievements">
+    <h2>Upload Achievement</h2>
+    <form action="/upload-achievement" method="POST" enctype="multipart/form-data">
+      <input type="text" name="title" placeholder="Achievement Title" required>
+      <input type="text" name="year" placeholder="Year (e.g., SY)" required>
+      <input type="file" name="achievement_pdf" accept=".pdf" required>
+      <button type="submit" class="upload-button">Upload Achievement</button>
+    </form>
+  </div>
+
+  <!-- Internship Table -->
+  <div class="uploaded-section">
+    <h3 class="uploaded-title">Uploaded Internships</h3>
+    <div class="table-container">
+      <table class="upload-table">
+        <thead>
+          <tr><th>Title</th><th>Year</th><th>File</th></tr>
+        </thead>
+        <tbody>
+          {% for internship in internships %}
+          <tr><td>{{ internship.title }}</td><td>{{ internship.year }}</td><td><a href="{{ url_for('admin_view_file', category='internships', filename=internship.filename) }}" target="_blank">View PDF</a></td></tr>
+          {% else %}
+          <tr><td colspan="3">No internships uploaded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Achievement Table -->
+  <div class="uploaded-section">
+    <h3 class="uploaded-title">Uploaded Achievements</h3>
+    <div class="table-container">
+      <table class="upload-table">
+        <thead>
+          <tr><th>Title</th><th>Year</th><th>File</th></tr>
+        </thead>
+        <tbody>
+          {% for achievement in achievements %}
+          <tr><td>{{ achievement.title }}</td><td>{{ achievement.year }}</td><td><a href="{{ url_for('admin_view_file', category='achievements', filename=achievement.filename) }}" target="_blank">View PDF</a></td></tr>
+          {% else %}
+          <tr><td colspan="3">No achievements uploaded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Carousel -->
+  <div class="carousel-container">
+    <div class="carousel" id="carousel">
+      <div class="carousel-item">"Easily upload your achievements and internship certificates. Keep them professional!"</div>
+      <div class="carousel-item">"Make sure your files are clear, named properly, and relevant to the section!"</div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-button" id="prevBtn">Prev</button>
+      <button class="carousel-button" id="nextBtn">Next</button>
+    </div>
+  </div>
+  <!-- Footer Start -->
+    <footer style="background: transparent; color: #fff; padding: 60px 20px 40px 20px; margin-top: 80px;">
+    <div style="
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: center;
+      gap: 40px;
+    ">
+
+    <div style="flex: 1; min-width: 250px;">
+      <h3 style="color: #ffd700; font-weight: 700;">CSESA Victory Hub</h3>
+      <p>Empowering student success through internships, achievements, and academic excellence.</p>
+    </div>
+
+    <div style="flex: 1; min-width: 200px;">
+      <h4 style="color: #ffd700;">Quick Links</h4>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="/" style="color: #fff; text-decoration: none;">Home</a></li>
+        <li><a href="/login" style="color: #fff; text-decoration: none;">Login</a></li>
+        <li><a href="/register" style="color: #fff; text-decoration: none;">Register</a></li>
+        <li><a href="/about" style="color: #fff; text-decoration: none;">About</a></li>
+      </ul>
+    </div>
+
+    <div style="flex: 1; min-width: 250px;">
+      <h4 style="color: #ffd700;">Contact Us</h4>
+      <p>Email: premrajrajput1345@gmail.com</p>
+      <p>Phone: +91 85915 33630</p>
+      <div style="margin-top: 10px;">
+        <a href="https://www.instagram.com/prem_r_rajput/" title="Instagram" style="margin-right: 10px;">
+          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
+        </a>
+        <a href="https://www.linkedin.com/in/prem-rajput/" title="LinkedIn">
+          <img src="https://cdn-icons-png.flaticon.com/24/145/145807.png" alt="LinkedIn">
+        </a>
+      </div>
+    </div>
+  </div>
+
+    <div style="text-align: center; margin-top: 40px; font-size: 0.85em; color: #ccc;">
+      &copy; 2025 CSESA Victory Hub. All Rights Reserved.
+    </div>
+  </footer>
+  <!-- Footer End -->
+
+  <!-- Tawk.to Live Chat -->
+  <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+      var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+      s1.async=true;
+      s1.src='https://embed.tawk.to/684d7da53471ad1915946ab2/1itnb5k91';
+      s1.charset='UTF-8';
+      s1.setAttribute('crossorigin','*');
+      s0.parentNode.insertBefore(s1,s0);
+    })();
+  </script>
+
+  <!-- Vanta.js Scripts -->
+  <script>
+    let vantaEffect, camera, clock = new THREE.Clock();
+
+    vantaEffect = VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0xffd700,
+      backgroundColor: 0x0d0d0d,
+      points: 12.0,
+      maxDistance: 20.0,
+      spacing: 18.0,
+      showDots: true,
+      THREE: THREE,
+      onInit: function() {
+        camera = vantaEffect.camera;
+      }
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (camera) {
+        const t = clock.getElapsedTime();
+        camera.position.x = Math.sin(t) * 100;
+        camera.position.z = Math.cos(t) * 100;
+        camera.lookAt(0, 0, 0);
+      }
+    }
+    animate();
+  </script>
+
+  <!-- Custom JS -->
+  <script>
+    function toggleSection(id) {
+      document.querySelectorAll('.upload-section').forEach(section => {
+        section.style.display = 'none';
+      });
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'block';
+        window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+      }
+    }
+    let currentSlide = 0;
+    const carousel = document.getElementById("carousel");
+    const totalSlides = document.querySelectorAll(".carousel-item").length;
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+    });
+    setInterval(() => {
+      document.getElementById("nextBtn").click();
+    }, 7000);
+    function toggleMenu(el) {
+      el.classList.toggle("open");
+      document.getElementById("navbarLinks").classList.toggle("show");
+    }
+  </script>
+</body>
+</html>

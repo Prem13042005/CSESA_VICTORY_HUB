@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us | CSESA Victory Hub</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Vanta.js Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: transparent;
+      color: #fff;
+      min-height: 100vh;
+      padding: 40px 20px;
+      scroll-behavior: smooth;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+    }
+
+    .about-container {
+      max-width: 1100px;
+      width: 100%;
+      background: #fff;
+      color: #333;
+      border-radius: 20px;
+      padding: 50px 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      animation: scaleFadeIn 1.2s ease forwards;
+      z-index: 1;
+    }
+
+    @keyframes scaleFadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      color: #ffd700;
+      margin-bottom: 30px;
+    }
+
+    .about-text p {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      color: #0c0c0c;
+    }
+
+    .team-section {
+      margin-top: 50px;
+    }
+
+    .team-section h2 {
+      text-align: center;
+      font-size: 28px;
+      color: #ffd700;
+      margin-bottom: 25px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
+    }
+
+    .team-member {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .team-member:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .team-member img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ffd700;
+      margin-bottom: 10px;
+    }
+
+    .team-member h3 {
+      color: #ffd700;
+      font-size: 18px;
+      margin-bottom: 5px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .team-member h3:hover {
+      text-decoration: underline;
+    }
+
+    .team-member p {
+      color: #060606;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      .about-container {
+        padding: 30px 25px;
+      }
+
+      .team-member img {
+        width: 75px;
+        height: 75px;
+      }
+
+      .team-member h3 {
+        font-size: 16px;
+      }
+
+      .team-member p {
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 24px;
+      }
+
+      .team-section h2 {
+        font-size: 22px;
+      }
+
+      .about-text p {
+        font-size: 14px;
+      }
+
+      .team-member img {
+        width: 65px;
+        height: 65px;
+      }
+
+      .team-member h3 {
+        font-size: 15px;
+      }
+
+      .team-member p {
+        font-size: 12px;
+      }
+
+      .about-container {
+        padding: 25px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Vanta Background -->
+  <div id="vanta-bg"></div>
+
+  <div class="about-container">
+    <h1>About Us</h1>
+    <div class="about-text">
+      <p>Welcome to <strong>CSESA Victory Hub</strong> — your intelligent companion for managing, showcasing, and celebrating your achievements, internships, and milestones throughout your Computer Science and Engineering journey.</p>
+      <p>Our mission is to transform the way academic excellence is recorded and recognized. By offering a centralized, secure, and faculty-accessible platform, we empower students to curate a professional digital portfolio that reflects their skills, growth, and potential.</p>
+      <p>At CSESA Victory Hub, we envision a transparent, structured, and future-ready ecosystem where your progress is not only documented — but amplified. Let your journey speak for itself.</p>
+    </div>
+
+    <div class="team-section">
+      <h2>Our Team</h2>
+      <div class="team-grid">
+        <div class="team-member">
+          <img src="/static/team1.jpg" alt="Pushkar Takane" loading="lazy">
+          <h3>Pushkar Takane</h3>
+          <p>Project Lead</p>
+        </div>
+        <div class="team-member">
+          <img src="/static/team3.jpg" alt="Omkar Mane" loading="lazy">
+          <h3>Omkar Mane</h3>
+          <p>Frontend Developer</p>
+        </div>
+        <div class="team-member">
+          <img src="/static/team2.jpg" alt="Prem Rajput" loading="lazy">
+          <h3>Prem Rajput</h3>
+          <p>Backend Developer</p>
+        </div>
+        <div class="team-member">
+          <img src="/static/team4.jpg" alt="Palak Shah" loading="lazy"> 
+          <h3>Palak Shah</h3>
+          <p>UI/UX Designer</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vanta Initialization -->
+  <script>
+    let vantaEffect, camera, clock = new THREE.Clock();
+
+    VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0xffd700,
+      backgroundColor: 0x000000
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (camera) {
+        const t = clock.getElapsedTime();
+        camera.position.x = Math.sin(t) * 100;
+        camera.position.z = Math.cos(t) * 100;
+        camera.lookAt(0, 0, 0);
+      }
+    }
+    animate();
+  </script>
+
+  <!-- Tawk.to Chat Integration -->
+  <script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    (function () {
+      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/684d7da53471ad1915946ab2/1itnb5k91';
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    })();
+  </script>
+
+</body>
+</html>

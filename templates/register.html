@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Register | CSESA Victory Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <!-- Vanta & Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #vanta-bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .register-box {
+      background-color: #ffffff;
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .register-box h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #ffd700;
+      font-size: 28px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #764ba2;
+      border-radius: 12px;
+      background-color: #f9f9f9;
+      font-size: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #764ba2;
+    }
+
+    .input-group input[type="file"] {
+      padding-left: 10px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 38px;
+      cursor: pointer;
+      color: #764ba2;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #ffd700;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #764ba280;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ffd700;
+      box-shadow: 0 0 25px #764ba2;
+      transform: scale(1.03);
+    }
+
+    .flash-message {
+      text-align: center;
+      background: #d4edda;
+      color: #155724;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    a {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: #764ba2;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #000;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 500px) {
+      .register-box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Vanta.js background -->
+  <div id="vanta-bg"></div>
+
+  <div class="container">
+    <div class="register-box">
+      <h2>Student Register</h2>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash-message">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="/register" enctype="multipart/form-data" id="registerForm">
+        <div class="input-group">
+          <label for="name">Full Name</label>
+          <input type="text" name="name" required>
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" required>
+        </div>
+
+        <div class="input-group">
+          <label for="dob">Date of Birth</label>
+          <input type="date" name="dob" required>
+        </div>
+
+        <div class="input-group">
+          <label for="gender">Gender</label>
+          <select name="gender" required>
+            <option value="" disabled selected hidden>-- Select Gender --</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="year">Academic Year</label>
+          <select name="year" required>
+            <option value="" disabled selected hidden>-- Select Year --</option>
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="photo">Profile Photo</label>
+          <input type="file" name="photo" accept="image/*" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" required>
+          <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+        </div>
+
+        <button type="submit" id="submitBtn">Register</button>
+      </form>
+
+      <a href="/login">Already have an account? Login</a>
+    </div>
+  </div>
+
+  <!-- Footer Start -->
+  <footer style="background: transparent; color: #fff; padding: 60px 20px 40px 20px; margin-top: 80px;">
+    <div style="
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: center;
+      gap: 40px;
+    ">
+    
+    <div style="text-align: center; margin-top: 40px; font-size: 0.85em; color: #ccc;">
+      &copy; 2025 CSESA Victory Hub. All Rights Reserved.
+    </div>
+  </footer>
+  <!-- Footer End -->
+
+  <!-- Vanta.NET Background -->
+  <script>
+    let vantaEffect, camera, clock = new THREE.Clock();
+
+    vantaEffect = VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0xffd700,
+      backgroundColor: 0x0d0d0d,
+      points: 12.0,
+      maxDistance: 20.0,
+      spacing: 18.0,
+      showDots: true,
+      THREE: THREE,
+      onInit: function () {
+        camera = vantaEffect.camera;
+      }
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (camera) {
+        const t = clock.getElapsedTime();
+        camera.position.x = Math.sin(t) * 100;
+        camera.position.z = Math.cos(t) * 100;
+        camera.lookAt(0, 0, 0);
+      }
+    }
+    animate();
+  </script>
+
+  <!-- Password toggle logic -->
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      togglePassword.classList.toggle('fa-eye-slash');
+    });
+
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', function (e) {
+      const password = form.password.value;
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters.");
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>

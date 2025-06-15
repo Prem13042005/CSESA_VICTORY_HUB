@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard | CSESA Victory Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body, html {
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      overflow-y: auto;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100vh;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .navbar {
+      background: transparent; 
+      padding: 15px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(1px); 
+    }
+
+    .navbar strong {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .navbar a {
+      padding: 10px 16px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 8px;
+      position: relative;
+      transition: 0.3s;
+    }
+
+    .navbar a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #fdf004;
+      transition: 0.3s;
+    }
+
+    .navbar a:hover::after {
+      width: 100%;
+    }
+
+    .logout-button {
+      background-color: #f44336;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .logout-button:hover {
+      background-color: #d32f2f;
+      transform: scale(1.05);
+    }
+
+    .main {
+      text-align: center;
+      padding: 80px 20px 40px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .center-img {
+      width: 120px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #070707;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+    .center-img:hover {
+      transform: scale(1.1);
+    }
+
+    .message {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #ffd54f;
+    }
+
+    .flash-messages {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ffeb3b;
+    }
+
+    .admin-section {
+      max-width: 1000px;
+      margin: 30px auto;
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+      animation: slideUp 1.5s ease;
+    }
+
+    .admin-section h2 {
+      color: #ffd700;
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #555;
+    }
+
+    th {
+      background-color: #111;
+      color: #fff;
+    }
+
+    td {
+      background-color: #222;
+    }
+
+    tr:hover {
+      background-color: #0b0b0b;
+      transition: 0.3s;
+    }
+
+    .carousel-container {
+      max-width: 600px;
+      margin: 50px auto;
+      overflow: hidden;
+    }
+
+    .carousel {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-item {
+      flex: 0 0 100%;
+      padding: 20px;
+      background-color: #111;
+      color: #fff;
+      font-size: 1.2em;
+      border-radius: 10px;
+    }
+
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .carousel-button {
+      padding: 10px 20px;
+      background-color: #ffd700;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .carousel-button:hover {
+      transform: scale(1.1);
+    }
+
+    #student-profiles {
+      padding: 40px 20px;
+      display: none;
+      text-align: center;
+    }
+
+    .student-cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .student-card {
+      background-color: #222;
+      border-radius: 12px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      transition: 0.3s;
+    }
+
+    .student-card:hover {
+      transform: scale(1.03);
+    }
+
+    .student-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .student-card h3 {
+      color: #ffd700;
+    }
+
+    .submit-approvals {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #fff;
+      background: #4caf50;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(6, 6, 6, 0.4);
+    } 
+
+    .submit-approvals:hover {
+      background: linear-gradient(135deg, #048602, #00ff6a);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(251, 251, 251, 0.952);
+    }
+
+    .download-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .download-btn:hover {
+      background-color: #45a049;
+    }
+
+    .generate-report {
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="vanta-bg"></div>
+
+    <div class="navbar">
+      <div><strong>Admin Dashboard</strong></div>
+      <div>
+        <a href="javascript:void(0);" onclick="showInternships()">Internships ({{ internships|length }})</a>
+        <a href="javascript:void(0);" onclick="showAchievements()">Achievements ({{ achievements|length }})</a>
+        <a href="javascript:void(0);" onclick="showStudents()">Students ({{ students|length }})</a>
+        <form action="/logout" method="POST" style="display:inline;">
+          <button type="submit" class="logout-button">Logout</button>
+        </form>
+      </div>
+    </div>
+
+  <!-- Welcome Section -->
+  <div class="main" id="main-content">
+    <img src="/static/college-logo.jpg" alt="College" class="center-img">
+    <p class="message">
+      "Admins have access to review and download all student submissions. Maintain and update achievements and internships efficiently."
+    </p>
+  </div>
+
+  <!-- Internship Files -->
+<div class="admin-section" id="internship-files" style="display: none;">
+  <h2>Internship Submissions</h2>
+  <form method="POST" action="{{ url_for('approve_files') }}">
+    <table>
+      <tr><th>Student Name</th><th>View</th><th>Approve</th></tr>
+      {% for row in internships %}
+      <tr>
+        <td>{{ row.student_name }}</td>
+        <td><a href="{{ url_for('admin_view_file', category='internships', filename=row.internship_file) }}" target="_blank">View PDF</a></td>
+        <td><input type="checkbox" name="approved_internships" value="{{ row.internship_id }}"></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <button type="submit" class="submit-approvals">Submit Approvals</button>
+  </form>
+</div>
+
+<!-- Achievement Files -->
+<div class="admin-section" id="achievement-files" style="display: none;">
+  <h2>Achievement Submissions</h2>
+  <form method="POST" action="{{ url_for('approve_files') }}">
+    <table>
+      <tr><th>Student Name</th><th>View</th><th>Approve</th></tr>
+      {% for row in achievements %}
+      <tr>
+        <td>{{ row.student_name }}</td>
+        <td><a href="{{ url_for('admin_view_file', category='achievements', filename=row.achievement_file) }}" target="_blank">View PDF</a></td>
+        <td><input type="checkbox" name="approved_achievements" value="{{ row.achievement_id }}"></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <button type="submit" class="submit-approvals">Submit Approvals</button>
+  </form>
+</div>
+
+  <!-- Student Profiles -->
+  <div id="student-profiles">
+    <h2>Student Profiles</h2>
+    <div class="student-cards-container">
+      {% for student in students %}
+      <div class="student-card">
+        <img src="{{ url_for('serve_profile_photo', filename=student.photo) }}" alt="Profile Photo">
+        <h3>{{ student.name }}</h3>
+        <p>{{ student.gender }} | Born: {{ student.dob }}</p>
+        <button class="generate-report"
+          data-name="{{ student.name }}"
+          data-internships='{{ student.internships | tojson | safe }}'
+          data-achievements='{{ student.achievements | tojson | safe }}'
+          onclick="handleGenerateReport(this)">
+            Generate Report
+        </button>
+        <a href="{{ url_for('generate_report', student_id=student['id']) }}" target="_blank">
+          <button class="download-btn">📄 Download Report</button>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Carousel -->
+  <div class="carousel-container">
+    <div class="carousel" id="carousel">
+      <div class="carousel-item">"As an Admin, you have the authority to view, approve, or delete student submissions."</div>
+      <div class="carousel-item">"Ensure all achievements and internship submissions are complete and authentic."</div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-button" id="prevBtn">Prev</button>
+      <button class="carousel-button" id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <!-- Footer Start -->
+    <footer style="background: transparent; color: #fff; padding: 60px 20px 40px 20px; margin-top: 80px;">
+    <div style="
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: center;
+      gap: 40px;
+    ">
+
+    <div style="flex: 1; min-width: 250px;">
+      <h3 style="color: #ffd700; font-weight: 700;">CSESA Victory Hub</h3>
+      <p>Empowering student success through internships, achievements, and academic excellence.</p>
+    </div>
+
+    <div style="flex: 1; min-width: 200px;">
+      <h4 style="color: #ffd700;">Quick Links</h4>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="/" style="color: #fff; text-decoration: none;">Home</a></li>
+        <li><a href="/login" style="color: #fff; text-decoration: none;">Login</a></li>
+        <li><a href="/register" style="color: #fff; text-decoration: none;">Register</a></li>
+        <li><a href="/about" style="color: #fff; text-decoration: none;">About</a></li>
+      </ul>
+    </div>
+
+    <div style="flex: 1; min-width: 250px;">
+      <h4 style="color: #ffd700;">Contact Us</h4>
+      <p>Email: premrajrajput1345@gmail.com</p>
+      <p>Phone: +91 85915 33630</p>
+      <div style="margin-top: 10px;">
+        <a href="https://www.instagram.com/prem_r_rajput/" title="Instagram" style="margin-right: 10px;">
+          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram">
+        </a>
+        <a href="https://www.linkedin.com/in/prem-rajput/" title="LinkedIn">
+          <img src="https://cdn-icons-png.flaticon.com/24/145/145807.png" alt="LinkedIn">
+        </a>
+      </div>
+    </div>
+  </div>
+
+    <div style="text-align: center; margin-top: 40px; font-size: 0.85em; color: #ccc;">
+      &copy; 2025 CSESA Victory Hub. All Rights Reserved.
+    </div>
+  </footer>
+  <!-- Footer End -->
+
+  <!--Start of Tawk.to Script-->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/684d7da53471ad1915946ab2/1itnb5k91';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
+
+  <!-- Vanta.js Scripts -->
+  <script>
+    let vantaEffect, camera, clock = new THREE.Clock();
+
+    vantaEffect = VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0xffd700,
+      backgroundColor: 0x0d0d0d,
+      points: 12.0,
+      maxDistance: 20.0,
+      spacing: 18.0,
+      showDots: true,
+      THREE: THREE,
+      onInit: function() {
+        camera = vantaEffect.camera;
+      }
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (camera) {
+        const t = clock.getElapsedTime();
+        camera.position.x = Math.sin(t) * 100;
+        camera.position.z = Math.cos(t) * 100;
+        camera.lookAt(0, 0, 0);
+      }
+    }
+    animate();
+  </script>
+
+  <script>
+    let currentSlide = 0;
+    const carousel = document.getElementById("carousel");
+    const totalSlides = document.querySelectorAll(".carousel-item").length;
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+    });
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+    });
+
+    setInterval(() => {
+      document.getElementById("nextBtn").click();
+    }, 7000);
+
+    function showInternships() {
+      document.getElementById("internship-files").style.display = "block";
+      document.getElementById("achievement-files").style.display = "none";
+      document.getElementById("student-profiles").style.display = "none";
+      document.getElementById("main-content").style.display = "none";
+    }
+
+    function showAchievements() {
+      document.getElementById("internship-files").style.display = "none";
+      document.getElementById("achievement-files").style.display = "block";
+      document.getElementById("student-profiles").style.display = "none";
+      document.getElementById("main-content").style.display = "none";
+    }
+
+    function showStudents() {
+      document.getElementById("internship-files").style.display = "none";
+      document.getElementById("achievement-files").style.display = "none";
+      document.getElementById("student-profiles").style.display = "block";
+      document.getElementById("main-content").style.display = "none";
+    }
+
+    function handleGenerateReport(button) {
+      const name = button.getAttribute('data-name');
+      const internships = JSON.parse(button.getAttribute('data-internships'));
+      const achievements = JSON.parse(button.getAttribute('data-achievements'));
+      generateReport(name, internships, achievements);
+    }
+
+    function generateReport(name, internships, achievements) {
+      const reportWindow = window.open('', '_blank');
+      const htmlContent = `
+        <html><head><title>${name} Report</title></head>
+        <body style="font-family: Arial; padding: 20px;">
+          <h2>Report for ${name}</h2>
+          <h3>Internships:</h3>
+          <ul>${internships.map(file => `<li>${file}</li>`).join('')}</ul>
+          <h3>Achievements:</h3>
+          <ul>${achievements.map(file => `<li>${file}</li>`).join('')}</ul>
+        </body></html>`;
+      reportWindow.document.write(htmlContent);
+    }
+    
+  </script>
+</body>
+</html>
