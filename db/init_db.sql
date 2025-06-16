@@ -52,3 +52,5 @@ ALTER TABLE students DROP COLUMN photo_filename;
 
 ALTER TABLE internships ADD COLUMN approved BOOLEAN DEFAULT FALSE;
 ALTER TABLE achievements ADD COLUMN approved BOOLEAN DEFAULT FALSE;
+
+DROP TABLE users;

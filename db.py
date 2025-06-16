@@ -8,8 +8,8 @@ def get_db_connection():
             password="WJ28@krhps",
             database="csesa_db"
         )
-        print("✅ DB connection successful")
+        print("[OK] DB connection successful")
         return conn
     except mysql.connector.Error as err:
-        print(f"❌ DB connection failed: {err}")
+        print(f"[ERROR] DB connection failed: {err}")
         raise

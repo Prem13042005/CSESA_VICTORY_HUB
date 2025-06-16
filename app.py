@@ -68,13 +68,12 @@ def send_email(subject, recipients, body):
         print(f"❌ Email sending failed: {e}")
 
 def get_all_students_with_files():
-    conn = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='WJ28@krhps',
-        database='csesa_db'
-    )
-    cursor = conn.cursor(dictionary=True)
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        print("[OK] DB connection successful")
+    except Exception as err:
+        print(f"[ERROR] DB connection failed: {err}")
 
     # Get all students
     cursor.execute("SELECT id, name, year FROM students")
