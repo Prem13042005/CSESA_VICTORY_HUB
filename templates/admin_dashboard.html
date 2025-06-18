@@ -296,6 +296,22 @@
       from { transform: translateY(30px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ffd700;
+      color: #000;
+      padding: 15px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      transition: all 0.3s ease;
+      z-index: 10;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    }
   </style>
 </head>
 <body>
@@ -414,9 +430,9 @@
     <div style="flex: 1; min-width: 200px;">
       <h4 style="color: #ffd700;">Quick Links</h4>
       <ul style="list-style: none; padding: 0;">
-        <li><a href="/" style="color: #fff; text-decoration: none;">Home</a></li>
-        <li><a href="/admin-login" style="color: #fff; text-decoration: none;">Login</a></li>
-        <li><a href="/admin-register" style="color: #fff; text-decoration: none;">Register</a></li>
+        <li><a href="/admin/dashboard" style="color: #fff; text-decoration: none;">Home</a></li>
+        <li><a href="/admin/login" style="color: #fff; text-decoration: none;">Login</a></li>
+        <li><a href="/admin/register" style="color: #fff; text-decoration: none;">Register</a></li>
         <li><a href="/about" style="color: #fff; text-decoration: none;">About</a></li>
       </ul>
     </div>
@@ -441,6 +457,8 @@
     </div>
   </footer>
   <!-- Footer End -->
+
+  <button class="back-to-top" id="backToTop" title="Back to top">&#8679;</button>
 
   <!--Start of Tawk.to Script-->
   <script type="text/javascript">

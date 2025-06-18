@@ -576,18 +576,12 @@ def approve_files():
 # sending approval email function
 def send_approval_email(email, name, category):
     msg = Message(subject=f"{category} Approved - CSESA",
-                  sender='your-email@example.com',
+                  sender='premarchanarajput0405@gmail.com',
                   recipients=[email])
     msg.body = f"Hello {name},\n\nYour {category.lower()} submission has been approved by the admin.\n\nRegards,\nCSESA Team"
     mail.send(msg)
 
 #Generate report
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.lib import colors
-
 @app.route('/generate_report/<int:student_id>')
 def generate_report(student_id):
     conn = get_db_connection()
