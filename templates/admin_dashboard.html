@@ -11,16 +11,20 @@
   <style>
     * {
       margin: 0; padding: 0; box-sizing: border-box;
-      scroll-behavior: smooth;
     }
 
     body, html {
+      scroll-behavior: smooth;
       font-family: 'Poppins', sans-serif;
       color: #fff;
       overflow-y: auto;
       height: 100%;
       position: relative;
       z-index: 1;
+    }
+
+    .main {
+      flex: 1;
     }
 
     #vanta-bg {
@@ -31,6 +35,13 @@
       min-height: 100vh;
       height: 100%;
       z-index: -1;
+      pointer-events: none;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
     }
 
     .navbar {
@@ -176,7 +187,7 @@
     .carousel-item {
       flex: 0 0 100%;
       padding: 20px;
-      background-color: #111;
+      background-color: transparent;
       color: #fff;
       font-size: 1.2em;
       border-radius: 10px;
@@ -297,6 +308,10 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
+    footer {
+      flex-shrink: 0;
+    }
+
     .back-to-top {
       position: fixed;
       bottom: 20px;
@@ -317,6 +332,7 @@
 <body>
 
   <div id="vanta-bg"></div>
+  <div class="page-wrapper">
 
     <div class="navbar">
       <div><strong>Admin Dashboard</strong></div>
@@ -457,6 +473,7 @@
     </div>
   </footer>
   <!-- Footer End -->
+  </div>
 
   <button class="back-to-top" id="backToTop" title="Back to top">&#8679;</button>
 

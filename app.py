@@ -14,9 +14,12 @@ from io import BytesIO
 from flask_mail import Mail, Message
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'
+app.secret_key = os.getenv("SECRET_KEY")
 
 # Base upload folder
 BASE_UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
@@ -576,7 +579,7 @@ def approve_files():
 # sending approval email function
 def send_approval_email(email, name, category):
     msg = Message(subject=f"{category} Approved - CSESA",
-                  sender='premarchanarajput0405@gmail.com',
+                  sender='premrajrajput1345@gmail.com',
                   recipients=[email])
     msg.body = f"Hello {name},\n\nYour {category.lower()} submission has been approved by the admin.\n\nRegards,\nCSESA Team"
     mail.send(msg)
