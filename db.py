@@ -1,12 +1,13 @@
 import mysql.connector
+import os
 
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="WJ28@krhps",
-            database="csesa_db"
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME")
         )
         print("[OK] DB connection successful")
         return conn
