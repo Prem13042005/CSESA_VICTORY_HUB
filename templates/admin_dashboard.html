@@ -340,7 +340,7 @@
         <a href="javascript:void(0);" onclick="showInternships()">Internships ({{ internships|length }})</a>
         <a href="javascript:void(0);" onclick="showAchievements()">Achievements ({{ achievements|length }})</a>
         <a href="javascript:void(0);" onclick="showStudents()">Students ({{ students|length }})</a>
-        <form action="/logout" method="POST" style="display:inline;">
+        <form action="/logout" method="POST" style="display:inline;" onsubmit="return confirmLogout();">
           <button type="submit" class="logout-button">Logout</button>
         </form>
       </div>
@@ -391,28 +391,30 @@
 </div>
 
   <!-- Student Profiles -->
-  <div id="student-profiles">
-    <h2>Student Profiles</h2>
-    <div class="student-cards-container">
-      {% for student in students %}
-      <div class="student-card">
-        <img src="{{ url_for('serve_profile_photo', filename=student.photo) }}" alt="Profile Photo">
-        <h3>{{ student.name }}</h3>
-        <p>{{ student.gender }} | Born: {{ student.dob }}</p>
-        <button class="generate-report"
-          data-name="{{ student.name }}"
-          data-internships='{{ student.internships | tojson | safe }}'
-          data-achievements='{{ student.achievements | tojson | safe }}'
-          onclick="handleGenerateReport(this)">
-            Generate Report
-        </button>
-        <a href="{{ url_for('generate_report', student_id=student['id']) }}" target="_blank">
-          <button class="download-btn">📄 Download Report</button>
-        </a>
-      </div>
-      {% endfor %}
+<div id="student-profiles">
+  <h2>Student Profiles</h2>
+  <div class="student-cards-container">
+    {% for student in students %}
+    <div class="student-card" id="student-{{ student.id }}">
+      <img src="{{ url_for('serve_profile_photo', filename=student.photo) }}" alt="Profile Photo">
+      <h3>{{ student.name }}</h3>
+      <p>{{ student.gender }} | Born: {{ student.dob }}</p>
+      <button class="generate-report"
+        data-name="{{ student.name }}"
+        data-internships='{{ student.internships | tojson | safe }}'
+        data-achievements='{{ student.achievements | tojson | safe }}'
+        onclick="handleGenerateReport(this)">
+          Generate Report
+      </button>
+      <a href="{{ url_for('generate_report', student_id=student['id']) }}" target="_blank">
+        <button class="download-btn">📄 Download Report</button>
+      </a>
+      <br><br>
+      <button onclick="confirmDelete({{ student.id }})" class="logout-button" style="background-color: #f44336;">🗑 Delete</button>
     </div>
+    {% endfor %}
   </div>
+</div>
 
   <!-- Carousel -->
   <div class="carousel-container">
@@ -588,7 +590,42 @@
         </body></html>`;
       reportWindow.document.write(htmlContent);
     }
-    
+
+    // Soft delete student cards with confirmation
+    function confirmDelete(studentId) {
+      if (confirm("Do you really want to delete this student profile?")) {
+        const profile = document.getElementById("student-" + studentId);
+        if (profile) profile.style.display = "none";
+
+        let hiddenIds = JSON.parse(localStorage.getItem("hiddenProfiles") || "[]");
+        if (!hiddenIds.includes(studentId)) {
+          hiddenIds.push(studentId);
+          localStorage.setItem("hiddenProfiles", JSON.stringify(hiddenIds));
+        }
+      }
+    }
+
+    // On page load: hide previously deleted cards unless they now have new files
+    window.addEventListener('DOMContentLoaded', () => {
+      let hiddenIds = JSON.parse(localStorage.getItem("hiddenProfiles") || "[]");
+
+      {% for student in students %}
+        {% if student.internships or student.achievements %}
+          hiddenIds = hiddenIds.filter(id => id !== {{ student.id }});
+        {% endif %}
+      {% endfor %}
+
+      localStorage.setItem("hiddenProfiles", JSON.stringify(hiddenIds));
+
+      hiddenIds.forEach(id => {
+        const el = document.getElementById("student-" + id);
+        if (el) el.style.display = "none";
+      });
+    });
+
+    function confirmLogout() {
+      return confirm("Are you sure you want to logout from the Admin Dashboard?");
+    } 
   </script>
 </body>
 </html>
