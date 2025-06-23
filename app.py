@@ -557,6 +557,7 @@ def admin_view_file(category, filename):
     folder = app.config['UPLOAD_FOLDER_INTERNSHIPS'] if category == 'internships' else app.config['UPLOAD_FOLDER_ACHIEVEMENTS']
     return send_from_directory(folder, filename)
 
+# Check Updates
 @app.route('/admin/check_updates')
 def check_updates():
     conn = get_db_connection()
