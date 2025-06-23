@@ -4,6 +4,7 @@ import mysql.connector
 import uuid
 from flask import Flask, jsonify, render_template, request, redirect, send_file, url_for, send_from_directory, flash, session, make_response
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from db import get_db_connection
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -65,9 +66,9 @@ def send_email(subject, recipients, body):
     try:
         msg = Message(subject=subject, recipients=recipients, body=body)
         mail.send(msg)
-        print(f"✅ Email sent to {recipients}")
+        print(f" Email sent to {recipients}")
     except Exception as e:
-        print(f"❌ Email sending failed: {e}")
+        print(f" Email sending failed: {e}")
 
 def get_all_students_with_files():
     try:
@@ -137,12 +138,7 @@ def login():
         cursor.close()
         conn.close()
 
-        hashed_input_password = hashlib.sha256(password.encode()).hexdigest()
-        print("📥 Login Attempt - Email:", email)
-        print("✅ Hashed Input:", hashed_input_password)
-        print("🧑 Student From DB:", student)
-
-        if student and student['password'] == hashed_input_password:
+        if student and check_password_hash(student['password'], password):
             session['user'] = {
                 'id': student['id'],
                 'name': student['name'],
@@ -150,13 +146,13 @@ def login():
                 'dob': student['dob'],
                 'gender': student['gender'],
                 'year': student['year'],
-                'photo': student['photo'] 
+                'photo': student['photo']
             }
-            print("🎉 Login successful!")
+            print(" Login successful!")
             return redirect(url_for('student_dashboard'))
         else:
             flash('Invalid email or password.')
-            print("❌ Login failed: Invalid credentials")
+            print(" Login failed: Invalid credentials")
             return redirect(url_for('login'))
 
     return render_template('login.html')
@@ -192,11 +188,11 @@ def register():
             """, (name, email, password, dob, gender, year, filename))
             conn.commit()
             flash('Registration successful! Please log in.')
-            print(f"✅ Registered student: {name}, {email}")
+            print(f" Registered student: {name}, {email}")
             return redirect('/login')
         except mysql.connector.Error as err:
-            flash(f"Database error: {err}")
-            print(f"❌ Registration DB error: {err}")
+            flash(f" Database error: {err}")
+            print(f" Registration DB error: {err}")
             return redirect(request.url)
         finally:
             cursor.close()
@@ -245,6 +241,58 @@ def student_dashboard():
         internships=internships,
         achievements=achievements
     )
+
+# Update Profile
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    if 'user' not in session:
+        flash("Please log in to update your profile.")
+        return redirect(url_for('login'))
+
+    user_id = session['user']['id']
+    new_password = request.form.get('new_password')
+    photo_file = request.files.get('new_photo')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Update fields dynamically
+    updates = []
+    values = []
+
+    if new_password:
+        hashed_password = generate_password_hash(new_password)
+        updates.append("password = %s")
+        values.append(hashed_password)
+
+    if photo_file and photo_file.filename:
+        filename = secure_filename(photo_file.filename)
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER_PHOTOS'], filename)
+        photo_file.save(photo_path)
+        updates.append("photo = %s")
+        values.append(filename)
+
+        # Update session photo path
+        session['user']['photo'] = filename
+
+    if not updates:
+        flash("No updates were made.")
+        return redirect(url_for('student_dashboard'))
+
+    # Prepare SQL
+    update_sql = f"UPDATE students SET {', '.join(updates)} WHERE id = %s"
+    values.append(user_id)
+    cursor.execute(update_sql, values)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    if new_password:
+        flash("Password updated. Please log in again with the new password.")
+        return redirect(url_for('logout'))
+
+    flash("Profile updated successfully.")
+    return redirect(url_for('student_dashboard'))
 
 # Admin Login
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -438,7 +486,7 @@ def upload_internship():
 
             # Send email to admin
             send_email(
-                subject='📂 New Internship Uploaded',
+                subject=' New Internship Uploaded',
                 recipients=['premarchanarajput0405@gmail.com'],
                 body=f'{student_name} uploaded a new internship titled "{title}" for Year: {year}.'
             )
@@ -489,7 +537,7 @@ def upload_achievement():
 
             # Send email to admin
             send_email(
-                subject='🏅 New Achievement Uploaded',
+                subject=' New Achievement Uploaded',
                 recipients=['premarchanarajput0405@gmail.com'],
                 body=f'{student_name} uploaded a new achievement titled "{title}" for Year: {year}.'
             )
@@ -536,7 +584,7 @@ def approve_files():
     approved_internships = request.form.getlist('approved_internships')
     approved_achievements = request.form.getlist('approved_achievements')
 
-    # ✅ Approve internships
+    #  Approve internships
     for internship_id in approved_internships:
         cursor.execute("UPDATE internships SET approved = TRUE WHERE id = %s", (internship_id,))
         
@@ -553,7 +601,7 @@ def approve_files():
             app.logger.warning(f"[Approval] No student found for internship ID: {internship_id}")
         flash('Selected files approved and notifications sent successfully.', 'success')
 
-    # ✅ Approve achievements
+    #  Approve achievements
     for achievement_id in approved_achievements:
         cursor.execute("UPDATE achievements SET approved = TRUE WHERE id = %s", (achievement_id,))
         
@@ -585,9 +633,9 @@ def send_approval_email(email, name, category):
         )
         msg.body = f"Hello {name},\n\nYour {category.lower()} submission has been approved by the admin.\n\nRegards,\nCSESA Team"
         mail.send(msg)
-        print(f"✅ Approval email sent to {email}")
+        print(f" Approval email sent to {email}")
     except Exception as e:
-        print(f"❌ Failed to send approval email to {email}: {e}")
+        print(f" Failed to send approval email to {email}: {e}")
 
 # Generate report  
 @app.route('/generate_report/<int:student_id>')

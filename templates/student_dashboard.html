@@ -83,6 +83,79 @@
       width: 100%;
     }
 
+    .profile-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-right: 15px;
+      cursor: pointer;
+      border: 2px solid #ffd700;
+    }
+
+    .profile-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .profile-popup-content {
+      background: #111;
+      padding: 30px;
+      border-radius: 12px;
+      color: #fff;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .profile-popup-content h2 {
+      color: #ffd700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .profile-popup-content label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .profile-popup-content input[type="file"],
+    .profile-popup-content input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .profile-popup-content button {
+      background: #ffd700;
+      color: #000;
+      padding: 10px 20px;
+      border: none;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .profile-popup-content .close {
+      position: absolute;
+      top: 8px;
+      right: 15px;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
     .logout-button {
       background: #ff4d4d;
       color: white;
@@ -246,7 +319,7 @@
       padding: 20px;
       text-align: center;
       font-size: 1.2em;
-      background-color: #111;
+      background-color: transparent;
       color: #fff;
       border-radius: 10px;
     }
@@ -283,7 +356,7 @@
       color: #0a0a0a;
       font-size: 15px;
       transition: 0.3s ease;
-      appearance: none; /* Remove native dropdown arrow on some browsers */
+      appearance: none; 
       background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
       background-repeat: no-repeat;
       background-position: right 10px center;
@@ -352,6 +425,7 @@
 
   <!-- NAVBAR -->
   <div class="navbar">
+    <img src="{{ url_for('serve_profile_photo', filename=user.photo) }}" alt="Profile Photo" class="profile-icon" onclick="toggleProfilePopup()">
     <div class="logo">Victory Hub</div>
     <div class="hamburger" onclick="toggleMenu(this)">
       <span></span><span></span><span></span>
@@ -369,17 +443,30 @@
     <img src="/static/college-logo.jpg" alt="College Logo" class="center-img">
     <p class="message">"Your achievements matter! Upload your milestones and internship experiences here."</p>
   </div>
+
   <!-- Profile Info -->
   <div style="max-width: 600px; margin: 0 auto 40px; text-align: center; padding: 30px; background: rgba(255,255,255,0.07); border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
-
     <img src="{{ url_for('serve_profile_photo', filename=user.photo) }}" alt="Profile Photo" class="profile-photo">
-
     <h2 style="margin-bottom: 10px; margin-top: 15px; font-weight: 600; color: #fff;">{{ user.name }}</h2>
-
     <p style="margin: 6px 0; color: #fff;"><strong>Email:</strong> {{ user.email }}</p>
     <p style="margin: 6px 0; color: #fff;"><strong>Gender:</strong> {{ user.gender }}</p>
     <p style="margin: 6px 0; color: #fff;"><strong>DOB:</strong> {{ user.dob }}</p>
     <p style="margin: 6px 0; color: #fff;"><strong>Year:</strong> {{ user.year }}</p>
+  </div>
+
+  <!-- Profile Popup -->
+  <div id="profilePopup" class="profile-popup">
+    <div class="profile-popup-content">
+      <span class="close" onclick="toggleProfilePopup()">&times;</span>
+      <h2>Update Profile</h2>
+      <form action="/update-profile" method="POST" enctype="multipart/form-data">
+        <label>Change Photo</label>
+        <input type="file" name="photo" accept="image/*">
+        <label>New Password</label>
+        <input type="password" name="password" placeholder="Enter new password">
+        <button type="submit">Update Profile</button>
+      </form>
+    </div>
   </div>
 
   <!-- Upload Internship -->
@@ -601,7 +688,13 @@
     }
     function confirmLogout() {
       return confirm("Are you sure you want to logout from the Student Dashboard?");
-    } 
+    }
+
+    function toggleProfilePopup() {
+      const popup = document.getElementById('profilePopup');
+      popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+    }
+
   </script>
 </body>
 </html>
