@@ -7,13 +7,12 @@ from werkzeug.utils import secure_filename
 from db import get_db_connection
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from reportlab.platypus import Table, TableStyle 
+from reportlab.lib import colors 
 from reportlab.lib.units import inch
 from io import BytesIO
 from flask_mail import Mail, Message
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -578,18 +577,25 @@ def approve_files():
 
 # sending approval email function
 def send_approval_email(email, name, category):
-    msg = Message(subject=f"{category} Approved - CSESA",
-                  sender='premrajrajput1345@gmail.com',
-                  recipients=[email])
-    msg.body = f"Hello {name},\n\nYour {category.lower()} submission has been approved by the admin.\n\nRegards,\nCSESA Team"
-    mail.send(msg)
+    try:
+        msg = Message(
+            subject=f"{category} Approved - CSESA",
+            sender='premrajrajput1345@gmail.com',
+            recipients=[email]
+        )
+        msg.body = f"Hello {name},\n\nYour {category.lower()} submission has been approved by the admin.\n\nRegards,\nCSESA Team"
+        mail.send(msg)
+        print(f"✅ Approval email sent to {email}")
+    except Exception as e:
+        print(f"❌ Failed to send approval email to {email}: {e}")
 
-#Generate report
+# Generate report  
 @app.route('/generate_report/<int:student_id>')
 def generate_report(student_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Get student info
     cursor.execute("SELECT name, email, year, photo FROM students WHERE id = %s", (student_id,))
     student = cursor.fetchone()
 
@@ -600,6 +606,7 @@ def generate_report(student_id):
 
     student_name, student_email, student_year, photo_filename = student
 
+    # Internships and Achievements
     cursor.execute("SELECT title, filename, year FROM internships WHERE student_id = %s", (student_id,))
     internships = cursor.fetchall()
 
@@ -609,13 +616,15 @@ def generate_report(student_id):
     cursor.close()
     conn.close()
 
+    # PDF Generation
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     story = []
     styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='CenterHeading', alignment=1, fontSize=16, spaceAfter=12))
 
     # Title
-    story.append(Paragraph(f"<b>Student Report - {student_name}</b>", styles['Title']))
+    story.append(Paragraph(f"<b>Student Report</b>", styles['CenterHeading']))
     story.append(Spacer(1, 12))
 
     # Profile Photo
@@ -623,7 +632,8 @@ def generate_report(student_id):
         photo_path = os.path.join(app.config['UPLOAD_FOLDER_PHOTOS'], photo_filename)
         if os.path.exists(photo_path):
             try:
-                img = Image(photo_path, width=2*inch, height=2*inch)
+                img = Image(photo_path, width=2 * inch, height=2 * inch)
+                img.hAlign = 'CENTER'
                 story.append(img)
                 story.append(Spacer(1, 12))
             except Exception as e:
@@ -633,45 +643,60 @@ def generate_report(student_id):
     story.append(Paragraph(f"<b>Name:</b> {student_name}", styles['Normal']))
     story.append(Paragraph(f"<b>Email:</b> {student_email}", styles['Normal']))
     story.append(Paragraph(f"<b>Year:</b> {student_year}", styles['Normal']))
-    story.append(Spacer(1, 12))
+    story.append(Spacer(1, 16))
 
     # Internships
     story.append(Paragraph("<b>Internships</b>", styles['Heading2']))
+    story.append(Spacer(1, 6))
     if internships:
-        data = [['Title', 'Filename', 'Year']] + list(internships)
-        table = Table(data, colWidths=[200, 200, 100])
+        data = [['Title', 'File', 'Year']] + [
+            [title, os.path.basename(filename), year] for title, filename, year in internships
+        ]
+        table = Table(data, colWidths=[180, 180, 80])
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#007ACC')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('GRID', (0, 0), (-1, -1), 0.8, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
         story.append(table)
     else:
         story.append(Paragraph("No internships uploaded.", styles['Normal']))
-    story.append(Spacer(1, 12))
+    story.append(Spacer(1, 18))
 
     # Achievements
     story.append(Paragraph("<b>Achievements</b>", styles['Heading2']))
+    story.append(Spacer(1, 6))
     if achievements:
-        data = [['Title', 'Filename', 'Year']] + list(achievements)
-        table = Table(data, colWidths=[200, 200, 100])
+        data = [['Title', 'File', 'Year']] + [
+            [title, os.path.basename(filename), year] for title, filename, year in achievements
+        ]
+        table = Table(data, colWidths=[180, 180, 80])
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgreen),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2E8B57')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('GRID', (0, 0), (-1, -1), 0.8, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
         story.append(table)
     else:
         story.append(Paragraph("No achievements uploaded.", styles['Normal']))
-    story.append(Spacer(1, 12))
+    story.append(Spacer(1, 24))
 
-    # End
+    # Final build
     doc.build(story)
-
     buffer.seek(0)
-    return send_file(buffer, as_attachment=True, download_name=f"{student_name}_Report.pdf", mimetype='application/pdf')
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"{student_name.replace(' ', '_')}_Report.pdf",
+        mimetype='application/pdf'
+    )
 
 # Logout
 @app.route('/logout', methods=['POST'])
