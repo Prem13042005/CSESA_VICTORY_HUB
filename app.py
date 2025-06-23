@@ -2,7 +2,7 @@ import os
 import hashlib
 import mysql.connector
 import uuid
-from flask import Flask, Response, jsonify, render_template, request, redirect, send_file, url_for, send_from_directory, flash, session, make_response
+from flask import Flask, jsonify, render_template, request, redirect, send_file, url_for, send_from_directory, flash, session, make_response
 from werkzeug.utils import secure_filename
 from db import get_db_connection
 from reportlab.pdfgen import canvas
