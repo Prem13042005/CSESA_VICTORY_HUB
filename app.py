@@ -9,7 +9,7 @@ from db import get_db_connection
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors 
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch 
 from io import BytesIO
 from flask_mail import Mail, Message
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
