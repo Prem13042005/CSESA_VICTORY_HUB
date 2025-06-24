@@ -424,20 +424,20 @@
   <div id="vanta-bg"></div>
 
   <!-- NAVBAR -->
-  <div class="navbar">
-    <img src="{{ url_for('serve_profile_photo', filename=user.photo) }}" alt="Profile Photo" class="profile-icon" onclick="toggleProfilePopup()">
-    <div class="logo">Victory Hub</div>
-    <div class="hamburger" onclick="toggleMenu(this)">
-      <span></span><span></span><span></span>
-    </div>
-    <div class="navbar-links" id="navbarLinks">
-      <a onclick="toggleSection('internship')">Internship</a>
-      <a onclick="toggleSection('achievements')">Achievements</a>
-      <form action="/logout" method="POST" style="display:inline;" onsubmit="return confirmLogout();">
-        <button type="submit" class="logout-button">Logout</button>
-      </form>
-    </div>
+<div class="navbar">
+  <div class="logo">Victory Hub</div>
+  <div class="hamburger" onclick="toggleMenu(this)">
+    <span></span><span></span><span></span>
   </div>
+  <div class="navbar-links" id="navbarLinks">
+    <a onclick="toggleSection('internship')">Internship</a>
+    <a onclick="toggleSection('achievements')">Achievements</a>
+    <form action="/logout" method="POST" style="display:inline;" onsubmit="return confirmLogout();">
+      <button type="submit" class="logout-button">Logout</button>
+    </form>
+  </div>
+</div>
+
 
   <div class="main">
     <img src="/static/college-logo.jpg" alt="College Logo" class="center-img">
@@ -445,29 +445,15 @@
   </div>
 
   <!-- Profile Info -->
-  <div style="max-width: 600px; margin: 0 auto 40px; text-align: center; padding: 30px; background: rgba(255,255,255,0.07); border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
-    <img src="{{ url_for('serve_profile_photo', filename=user.photo) }}" alt="Profile Photo" class="profile-photo">
-    <h2 style="margin-bottom: 10px; margin-top: 15px; font-weight: 600; color: #fff;">{{ user.name }}</h2>
-    <p style="margin: 6px 0; color: #fff;"><strong>Email:</strong> {{ user.email }}</p>
-    <p style="margin: 6px 0; color: #fff;"><strong>Gender:</strong> {{ user.gender }}</p>
-    <p style="margin: 6px 0; color: #fff;"><strong>DOB:</strong> {{ user.dob }}</p>
-    <p style="margin: 6px 0; color: #fff;"><strong>Year:</strong> {{ user.year }}</p>
-  </div>
+<div style="max-width: 600px; margin: 0 auto 40px; text-align: center; padding: 30px; background: rgba(255,255,255,0.07); border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+  <img src="{{ url_for('serve_profile_photo', filename=user.photo) }}" alt="Profile Photo" class="profile-photo">
+  <h2 style="margin-bottom: 10px; margin-top: 15px; font-weight: 600; color: #fff;">{{ user.name }}</h2>
+  <p style="margin: 6px 0; color: #fff;"><strong>Email:</strong> {{ user.email }}</p>
+  <p style="margin: 6px 0; color: #fff;"><strong>Gender:</strong> {{ user.gender }}</p>
+  <p style="margin: 6px 0; color: #fff;"><strong>DOB:</strong> {{ user.dob }}</p>
+  <p style="margin: 6px 0; color: #fff;"><strong>Year:</strong> {{ user.year }}</p>
+</div>
 
-  <!-- Profile Popup -->
-  <div id="profilePopup" class="profile-popup">
-    <div class="profile-popup-content">
-      <span class="close" onclick="toggleProfilePopup()">&times;</span>
-      <h2>Update Profile</h2>
-      <form action="/update-profile" method="POST" enctype="multipart/form-data">
-        <label>Change Photo</label>
-        <input type="file" name="photo" accept="image/*">
-        <label>New Password</label>
-        <input type="password" name="password" placeholder="Enter new password">
-        <button type="submit">Update Profile</button>
-      </form>
-    </div>
-  </div>
 
   <!-- Upload Internship -->
   <div class="upload-section" id="internship">

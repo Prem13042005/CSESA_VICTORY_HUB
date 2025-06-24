@@ -128,7 +128,7 @@ def about():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].strip()
         password = request.form['password']
 
         conn = get_db_connection()
@@ -148,11 +148,9 @@ def login():
                 'year': student['year'],
                 'photo': student['photo']
             }
-            print(" Login successful!")
             return redirect(url_for('student_dashboard'))
         else:
             flash('Invalid email or password.')
-            print(" Login failed: Invalid credentials")
             return redirect(url_for('login'))
 
     return render_template('login.html')
@@ -166,17 +164,17 @@ def register():
         gender = request.form['gender']
         dob = request.form['dob']
         year = request.form['year']
-        password = hashlib.sha256(request.form['password'].encode()).hexdigest()
+        password = request.form['password']
+
+        hashed_password = generate_password_hash(password)
 
         photo = request.files['photo']
-        filename = None
+        filename = 'default-profile.png'
 
         if photo and allowed_file(photo.filename):
             filename = secure_filename(photo.filename)
             photo_path = os.path.join(app.config['UPLOAD_FOLDER_PHOTOS'], filename)
             photo.save(photo_path)
-        else:
-            filename = 'default-profile.png'  
 
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -185,15 +183,13 @@ def register():
             cursor.execute("""
                 INSERT INTO students (name, email, password, dob, gender, year, photo)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (name, email, password, dob, gender, year, filename))
+            """, (name, email, hashed_password, dob, gender, year, filename))
             conn.commit()
             flash('Registration successful! Please log in.')
-            print(f" Registered student: {name}, {email}")
-            return redirect('/login')
+            return redirect(url_for('login'))
         except mysql.connector.Error as err:
-            flash(f" Database error: {err}")
-            print(f" Registration DB error: {err}")
-            return redirect(request.url)
+            flash(f"Database error: {err}")
+            return redirect(url_for('register'))
         finally:
             cursor.close()
             conn.close()
@@ -241,58 +237,6 @@ def student_dashboard():
         internships=internships,
         achievements=achievements
     )
-
-# Update Profile
-@app.route('/update-profile', methods=['POST'])
-def update_profile():
-    if 'user' not in session:
-        flash("Please log in to update your profile.")
-        return redirect(url_for('login'))
-
-    user_id = session['user']['id']
-    new_password = request.form.get('new_password')
-    photo_file = request.files.get('new_photo')
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Update fields dynamically
-    updates = []
-    values = []
-
-    if new_password:
-        hashed_password = generate_password_hash(new_password)
-        updates.append("password = %s")
-        values.append(hashed_password)
-
-    if photo_file and photo_file.filename:
-        filename = secure_filename(photo_file.filename)
-        photo_path = os.path.join(app.config['UPLOAD_FOLDER_PHOTOS'], filename)
-        photo_file.save(photo_path)
-        updates.append("photo = %s")
-        values.append(filename)
-
-        # Update session photo path
-        session['user']['photo'] = filename
-
-    if not updates:
-        flash("No updates were made.")
-        return redirect(url_for('student_dashboard'))
-
-    # Prepare SQL
-    update_sql = f"UPDATE students SET {', '.join(updates)} WHERE id = %s"
-    values.append(user_id)
-    cursor.execute(update_sql, values)
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    if new_password:
-        flash("Password updated. Please log in again with the new password.")
-        return redirect(url_for('logout'))
-
-    flash("Profile updated successfully.")
-    return redirect(url_for('student_dashboard'))
 
 # Admin Login
 @app.route('/admin/login', methods=['GET', 'POST'])
